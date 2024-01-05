@@ -1,0 +1,17 @@
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# Set default indentation for code
+[*.{js,jsx,ts,tsx,vue,css,scss,html,json,xml,yaml,yml}]
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+# Trim trail newline for formats with a closing tag
+[*.{vue,html,json,xml}]
+insert_final_newline = false

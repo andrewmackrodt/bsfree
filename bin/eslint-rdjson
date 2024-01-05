@@ -1,0 +1,18 @@
+#!/bin/sh
+# set the reviewdog reporter based on the type of event
+if [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ]; then
+  reporter="github-pr-review"
+elif [ "${GITHUB_EVENT_NAME:-}" = "push" ]; then
+  reporter="github-check"
+fi
+
+# disable reviewdog if running in gitea
+if [ "${GITEA_ACTIONS:-}" = "true" ]; then
+  unset reporter
+fi
+
+if [ "${reporter:-}" = "" ]; then # run eslint without reviewdog
+  eslint "$@"
+else # run eslint with reviewdog
+  eslint "$@" --format rdjson . | reviewdog -f=rdjson -reporter="$reporter"
+fi

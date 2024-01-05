@@ -1,29 +1,14 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BSFree Cheat Codes Archive</title>
-    <link type="scss" rel="stylesheet" href="styles/main.scss"/>
-</head>
-<body>
-<main id="app"></main>
-<!-- scss -->
-<script src="libs/sass.js/0.9.13/sass.sync.min.js"></script>
-<script type="module">
-    document.querySelectorAll('link[type*="scss"]').forEach(async link => {
-        const response = await fetch(link.getAttribute('href'))
-        const scss = await response.text()
-        Sass.compile(scss, compiled => link.outerHTML = `<style>${compiled.text}</style>`)
-    })
-</script>
-<!-- preact -->
-<script src="libs/babel-standalone/7.21.2/babel.min.js"></script>
-<script src="libs/require.js"></script>
-<script>
-    const preact = require('preact')
-    const React = preact
-    require('./components/app.tsx')
-</script>
-</body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./src/assets/logo.png">
+    <title>BSFree Archive</title>
+    <!--__unplugin-inject-preload__-->
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
 </html>

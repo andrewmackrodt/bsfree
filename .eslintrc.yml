@@ -1,0 +1,110 @@
+parser: vue-eslint-parser
+extends:
+  - plugin:@typescript-eslint/recommended
+  - plugin:import/errors
+  - plugin:import/warnings
+  - plugin:import/typescript
+  - plugin:vue/vue3-recommended
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  ecmaVersion: latest
+  emitDecoratorMetadata: true
+  extraFileExtensions:
+    - '.vue'
+  parser: '@typescript-eslint/parser'
+  sourceType: module
+plugins:
+  - '@typescript-eslint'
+  - import
+  - vue
+ignorePatterns:
+  - out/**
+rules:
+  comma-dangle:
+    - error
+    - always-multiline
+  eol-last:
+    - error
+  import/newline-after-import:
+    - error
+    - count: 1
+  import/no-named-as-default:
+    - off
+  import/order:
+    - error
+    - alphabetize:
+        caseInsensitive: true
+        order: asc
+      groups:
+        - builtin
+        - external
+        - [ parent, sibling, index ]
+      newlines-between: never
+  no-trailing-spaces:
+    - error
+  object-curly-spacing:
+    - error
+    - always
+  prefer-const:
+    - error
+    - destructuring: all
+  quote-props:
+    - error
+    - as-needed
+  quotes:
+    - error
+    - single
+    - avoidEscape: true
+  space-infix-ops:
+    - error
+  space-unary-ops:
+    - error
+    - overrides:
+        '!': true
+  '@typescript-eslint/consistent-type-imports':
+    - error
+  '@typescript-eslint/member-delimiter-style':
+    - error
+    - multiline:
+        delimiter: none
+  '@typescript-eslint/no-explicit-any':
+    - warn
+  '@typescript-eslint/no-inferrable-types':
+    - off
+  '@typescript-eslint/no-unused-vars':
+    - off
+  '@typescript-eslint/semi':
+    - error
+    - never
+  'vue/component-name-in-template-casing':
+    - error
+    - PascalCase
+  'vue/html-indent':
+    - error
+    - 2
+  'vue/max-attributes-per-line':
+    - off
+  'vue/multi-word-component-names':
+    - off
+  'vue/no-lone-template':
+    - off
+  'vue/no-multiple-template-root':
+    - off
+  'vue/no-reserved-component-names':
+    - off
+  'vue/no-v-html':
+    - off
+settings:
+  'import/resolver':
+    alias:
+      extensions: [ '.ts', 'tsx', '.js', '.jsx' ]
+      map:
+        - [ '@*', './src' ]
+        - [ '@assets', './src/assets' ]
+        - [ '@components', './src/components' ]
+        - [ '@router', './src/router' ]
+        - [ '@scss', './src/styles' ]
+        - [ '@stores', './src/stores' ]
+        - [ '@utils', './src/utils' ]
+        - [ '@views', './src/views' ]

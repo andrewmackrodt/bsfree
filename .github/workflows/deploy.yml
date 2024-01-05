@@ -1,0 +1,37 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows:
+      - lint
+    branches:
+      - main
+    types:
+      - completed
+
+env:
+  PRIMARY_NODE_VERSION: 20
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: corepack enable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.PRIMARY_NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: sed -E 's#(href|src)="/./#\1="./#g' out/index.html | perl -pe 's/\n//' >out/index.min.html && mv out/index.min.html out/index.html
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out

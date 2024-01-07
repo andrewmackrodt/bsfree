@@ -1,0 +1,1 @@
+import{a as e}from"./primevue@JRHUw1Xt.js";import{I as t,d as a,y as o,j as r,N as s,c as n,C as c}from"./vue@VMVV_7_-.js";const _=t({__name:"NotFoundView",setup(l){return(i,m)=>(n(),a("main",null,[o(s(e),{severity:"error",closable:!1},{default:r(()=>[c(" Not Found ")]),_:1})]))}});export{_ as default};

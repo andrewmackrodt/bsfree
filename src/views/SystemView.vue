@@ -3,13 +3,19 @@ import Column from 'primevue/column'
 import DataTable, { type DataTableFilterMetaData, type DataTableRowSelectEvent } from 'primevue/datatable'
 import InputText from 'primevue/inputtext'
 import { ref, onBeforeMount, watch, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { type RouteLocationNormalizedLoaded, useRoute, useRouter } from 'vue-router'
 import { getGames, getSystemName, type GameListItem } from '@utils/db'
 import { setRefFromHistory } from '@utils/history'
+import { toSlug } from '@utils/route'
 
 const $route = useRoute()
 const $router = useRouter()
 const history = $router.options.history
+
+interface GameListItemWithRoute extends GameListItem {
+  slug: string
+  route: RouteLocationNormalizedLoaded
+}
 
 const props = defineProps({
   id: { type: String, required: true },
@@ -29,7 +35,17 @@ async function load(loadData = true) {
   if (loadData) {
     await Promise.all([
       setRefFromHistory(history, 'name', name, () => getSystemName(props.id)),
-      getGames(props.id).then(res => games.value = res),
+      getGames(props.id).then(res => games.value = res?.map(game => {
+        const slug = toSlug(game.name)
+        return { ...game, slug, route: $router.resolve({
+          name: 'game', params: {
+            systemId: props.id,
+            systemSlug: props.slug,
+            id: game.uid,
+            slug: toSlug(game.name),
+          },
+        }) }
+      })),
     ])
   }
 }
@@ -64,20 +80,17 @@ const paginatorTemplate = [
   'CurrentPageReport',
 ].join(' ')
 
+function navigateToGame(game: GameListItemWithRoute) {
+  return $router.push({ ...game.route, state: { systemName: name.value, name: game.name } })
+}
+
 function onRowSelect(e: DataTableRowSelectEvent) {
-  $router.push({
-    name: 'game',
-    params: {
-      systemId: props.id,
-      systemSlug: props.slug,
-      id: e.data.uid,
-      slug: e.data.name.toLowerCase().replaceAll(/[^a-z0-9 ]/gi, '').replaceAll(/ /g, '-'),
-    },
-    state: {
-      systemName: name.value,
-      name: e.data.name,
-    },
-  })
+  return navigateToGame(e.data)
+}
+
+function onClickGame(e: MouseEvent, data: GameListItemWithRoute) {
+  e.preventDefault()
+  return navigateToGame(data)
 }
 </script>
 
@@ -104,7 +117,13 @@ function onRowSelect(e: DataTableRowSelectEvent) {
           </span>
         </div>
       </template>
-      <Column field="name" header="Game" :sortable="true" />
+      <Column header="Game" :sortable="true">
+        <template #body="slotProps">
+          <router-link v-slot="{ href }" :to="slotProps.data.route" custom>
+            <a class="row-link" :href="href" @click="(e: MouseEvent) => onClickGame(e, slotProps.data)">{{ slotProps.data.name }}</a>
+          </router-link>
+        </template>
+      </Column>
       <Column field="version" header="Version" :sortable="true" />
       <Column field="device.name" header="Device" :sortable="true" />
       <Column field="system.name" header="System" :sortable="true" />

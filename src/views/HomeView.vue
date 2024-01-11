@@ -2,27 +2,43 @@
 import Column from 'primevue/column'
 import DataTable, { type DataTableRowSelectEvent } from 'primevue/datatable'
 import { computed, ref, onBeforeMount } from 'vue'
-import { useRouter } from 'vue-router'
+import { type RouteLocationNormalizedLoaded, useRouter } from 'vue-router'
 import { getSystems, type SystemListItem } from '@utils/db'
+import { toSlug } from '@utils/route'
 
 const $router = useRouter()
 
-const systems = ref<SystemListItem[] | undefined>()
+interface SystemListItemWithRoute extends SystemListItem {
+  slug: string
+  route: RouteLocationNormalizedLoaded
+}
+
+const systems = ref<SystemListItemWithRoute[] | undefined>()
 const qty = computed(() => systems.value ? systems.value.reduce((sum, system) => sum + system.qty, 0) : 0)
 
 onBeforeMount(async () => {
-  systems.value = await getSystems()
+  systems.value = (await getSystems()).map(system => {
+    const slug = toSlug(system.name)
+    return { ...system, slug, route: $router.resolve({
+      name: 'system', params: {
+        id: system.id,
+        slug: toSlug(system.name),
+      },
+    }) }
+  })
 })
 
+function navigateToSystem(system: SystemListItemWithRoute) {
+  return $router.push({ ...system.route, state: { name: system.name } })
+}
+
 function onRowSelect(e: DataTableRowSelectEvent) {
-  $router.push({
-    name: 'system',
-    params: {
-      id: e.data.id,
-      slug: e.data.name.toLowerCase().replaceAll(/[^a-z0-9 ]/gi, '').replaceAll(/ /g, '-'),
-    },
-    state: { name: e.data.name },
-  })
+  return navigateToSystem(e.data)
+}
+
+function onClickSystem(e: MouseEvent, data: SystemListItemWithRoute) {
+  e.preventDefault()
+  return navigateToSystem(data)
 }
 </script>
 
@@ -42,7 +58,13 @@ function onRowSelect(e: DataTableRowSelectEvent) {
       size="small" class="pl-0 sm:col-10 md:col-6 xl:col-5"
       @row-select="onRowSelect"
     >
-      <Column field="name" header="System" class="col-10" />
+      <Column header="System" class="col-10">
+        <template #body="slotProps">
+          <router-link v-slot="{ href }" :to="slotProps.data.route" custom>
+            <a class="row-link" :href="href" @click="(e: MouseEvent) => onClickSystem(e, slotProps.data)">{{ slotProps.data.name }}</a>
+          </router-link>
+        </template>
+      </Column>
       <Column header="Codes" class="col-2 text-right">
         <template #body="slotProps">
           {{ slotProps.data.qty.toLocaleString() }}

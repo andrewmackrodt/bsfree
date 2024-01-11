@@ -12,6 +12,14 @@ body {
   margin-top: 0;
 }
 
+a.row-link, a:hover.row-link, a:visited.row-link {
+  color: inherit;
+  cursor: inherit;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 100%;
+}
+
 .bg-dark {
   background-color: var(--surface-900);
 }

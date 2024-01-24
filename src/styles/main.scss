@@ -12,6 +12,14 @@ body {
   margin-top: 0;
 }
 
+a.page-link, a:hover.page-link, a:visited.page-link {
+  color: inherit;
+  cursor: inherit;
+  display: inline-grid;
+  text-align: center;
+  text-decoration: inherit;
+}
+
 a.row-link, a:hover.row-link, a:visited.row-link {
   color: inherit;
   cursor: inherit;
